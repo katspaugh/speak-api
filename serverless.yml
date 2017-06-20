@@ -11,11 +11,12 @@
 #
 # Happy Coding!
 
-service: grammar-api # NOTE: update this with your service name
+service: speak-api # NOTE: update this with your service name
 
 package:
   include:
-    - bin/*
+    - speak
+    - espeak-data/**
 
 provider:
   name: aws
@@ -24,10 +25,10 @@ provider:
   profile: personal
 
 functions:
-  auth:
+  speak:
     handler: handler.speak
     events:
       - http:
-          path: /speak
-          method: get
+          path: /ipa
+          method: post
           cors: true

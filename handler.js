@@ -1,3 +1,4 @@
+const path = require('path');
 const spawn = require('child_process').spawn;
 
 function response(view) {
@@ -17,17 +18,18 @@ function errorResponse(err) {
 
 
 module.exports.speak = (event, context, callback) => {
-  const speak = spawn('./bin/speak', ['-lh', '/usr']);
+  const speak = spawn(path.resolve('./speak'), [
+    '--path=' + path.resolve('.'),
+    '-q',
+    '--ipa',
+    event.body.trim()
+  ]);
 
   speak.stdout.on('data', (data) => {
-    callback(null, response(data));
+    callback(null, response(data.toString('utf-8')));
   });
 
   speak.stderr.on('data', (data) => {
-    callback(null, errorResponse(data));
-  });
-
-  speak.on('close', (code) => {
-    console.log(`child process exited with code ${code}`);
+    callback(null, errorResponse(data.toString('utf-8')));
   });
 };
