@@ -16,14 +16,16 @@ function errorResponse(err) {
   return { statusCode: 500 };
 }
 
-
 module.exports.speak = (event, context, callback) => {
   const speak = spawn(path.resolve('./speak'), [
     '--path=' + path.resolve('.'),
     '-q',
     '--ipa',
-    event.body.trim()
+    '--stdin'
   ]);
+
+  speak.stdin.setEncoding('utf-8');
+  speak.stdout.pipe(event.body.trim());
 
   speak.stdout.on('data', (data) => {
     callback(null, response(data.toString('utf-8')));
